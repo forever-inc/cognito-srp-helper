@@ -1,12 +1,22 @@
 # 🔐 Cognito SRP Helper
 
-JavaScript helper used to calculate the values required for SRP authentication in AWS Cognito
+Helper used to calculate the values required for SRP authentication in AWS Cognito.
+This repository now includes a Ruby implementation in `lib/cognito_srp_helper.rb`.
 
 If you've ever tried to use the in-built SRP authentication flows in Cognito (USER_SRP_AUTH or CUSTOM_AUTH) using initiateAuth and respondToAuthChallenge, you may have encountered holes in the documentation that don't explain specific fields (SRP_A, TIMESTAMP, PASSWORD_CLAIM_SIGNATURE). You may also notice that there are no SDK functions that will generate values for these fields, leaving you stuck and unable to progress. This helper was created to bridge the missing support for SRP authentication in AWS Cognito, providing functions that will handle the necessary calculations needed to complete the authentication flow
 
 The helper works by providing functions that generate the required hashes for your secret and password, and wrapping your Cognito request and returning the same request with the required SRP fields. It work's with AWS SDK v2 and v3
 
 ## Usage
+
+### Ruby
+
+```rb
+require_relative "lib/cognito_srp_helper"
+
+secret_hash = CognitoSrpHelper.create_secret_hash(username, client_id, secret_id)
+session = CognitoSrpHelper.create_srp_session(username, password, pool_id, false)
+```
 
 This is a Hybrid package, so you can use both ES import:
 
