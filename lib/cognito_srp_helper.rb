@@ -10,7 +10,7 @@ module CognitoSrpHelper
   class MissingSaltError < SignSrpSessionError; end
   class MissingSecretError < SignSrpSessionError; end
   class MissingLargeBError < SignSrpSessionError; end
-  class MissingUserIdForSrpBError < SignSrpSessionError; end
+  class MissingUserIdForSrpError < SignSrpSessionError; end
   class MissingDeviceKeyError < SignSrpSessionError; end
 
   class AbortOnZeroSrpError < StandardError; end
@@ -146,7 +146,7 @@ module CognitoSrpHelper
     raise MissingSaltError, "Missing SALT in ChallengeParameters" unless salt
     raise MissingSecretError, "Missing SECRET_BLOCK in ChallengeParameters" unless secret
     raise MissingLargeBError, "Missing SRP_B in ChallengeParameters" unless large_b
-    raise MissingUserIdForSrpBError, "Missing USER_ID_FOR_SRP in ChallengeParameters" unless user_id_for_srp
+    raise MissingUserIdForSrpError, "Missing USER_ID_FOR_SRP in ChallengeParameters" unless user_id_for_srp
 
     sign_common_session(
       session,
@@ -238,9 +238,9 @@ module CognitoSrpHelper
   end
 
   def calculate_s(x, large_b, small_a, u)
-    g_mod_pow_x_n = mod_pow(G, x, N)
-    int_value_2 = large_b - (k * g_mod_pow_x_n)
-    mod_pow(int_value_2, small_a + (u * x), N)
+    g_to_x_mod_n = mod_pow(G, x, N)
+    adjusted_large_b = large_b - (k * g_to_x_mod_n)
+    mod_pow(adjusted_large_b, small_a + (u * x), N)
   end
 
   def calculate_x(salt, username_password_hash)
@@ -323,4 +323,8 @@ module CognitoSrpHelper
       password_signature: password_signature
     )
   end
+
+  private_class_method :generate_small_a, :calculate_large_a, :compute_hkdf, :calculate_u, :calculate_s, :calculate_x,
+                       :create_device_hash, :mod_pow, :read_key, :write_key, :session_value, :session_password_hash,
+                       :sign_common_session
 end

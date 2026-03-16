@@ -64,7 +64,7 @@ class CognitoSrpHelperTest < Minitest::Test
       SESSION,
       response,
       "-FDRunwQv",
-      "BAUl"
+      "device-random-password"
     )
 
     assert_match(/\A[A-Za-z0-9+\/=]+\z/, signed[:password_signature])
